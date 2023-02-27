@@ -47,8 +47,8 @@ def _find_heif_files(top_dir: Path) -> List[Path]:
 def _convert(files: List[Path]) -> None:
     for file in files:
         inp = str(file)
-        out = file.parent / (file.stem + ".jpg")
-        out_path = Path(out)
+        out_path = file.parent / (file.stem + ".jpg")
+        out = str(out_path)
         if not out_path.exists():
             logging.info("Converting %s to %s...", inp, out)
             subprocess.run(["convert", inp, out], check=True)
