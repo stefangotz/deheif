@@ -37,7 +37,7 @@ def _main() -> None:
 
     files: List[Path] = _find_heif_files(top_dir)
     _convert(files)
-    _delete(files)
+    _hide(_get_files_to_hide(files))
 
 
 def _find_heif_files(top_dir: Path) -> List[Path]:
@@ -56,14 +56,23 @@ def _convert(files: List[Path]) -> None:
 
 
 def _delete(files: List[Path]) -> None:
+    for file in files:
+        logging.info("Deleting %s...", file)
+        file.unlink()
+
+
+def _hide(files: List[Path]) -> None:
+    for file in files:
+        logging.info("Hiding %s...", file)
+        subprocess.run(["attrib", "+H", str(file)], check=True)
+
+
+def _get_files_to_hide(files: List[Path]) -> List[Path]:
     def _get_mtime(path: Path) -> int:
         return int(path.stat().st_mtime)
 
     files.sort(key=_get_mtime)
-    files_to_delete = files[:-10]
-    for file in files_to_delete:
-        logging.info("Deleting %s...", file)
-        file.unlink()
+    return files[:-10]
 
 
 if __name__ == "__main__":
